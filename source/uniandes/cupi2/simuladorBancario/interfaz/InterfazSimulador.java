@@ -1,6 +1,6 @@
 /**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Universidad de los Andes (Bogotá - Colombia)
- * Departamento de Ingeniería de Sistemas y Computación 
+ * Universidad de los Andes (Bogotï¿½ - Colombia)
+ * Departamento de Ingenierï¿½a de Sistemas y Computaciï¿½n 
  * Licenciado bajo el esquema Academic Free License version 2.1 
  *
  * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
@@ -22,7 +22,7 @@ import javax.swing.border.TitledBorder;
 import uniandes.cupi2.simuladorBancario.mundo.*;
 
 /**
- * Ventana principal de la aplicación.
+ * Ventana principal de la aplicaciï¿½n.
  */
 @SuppressWarnings("serial")
 public class InterfazSimulador extends JFrame
@@ -72,7 +72,7 @@ public class InterfazSimulador extends JFrame
     private PanelSaldos panelSaldos;
 
     /**
-     * Panel de visualización de datos personales.
+     * Panel de visualizaciï¿½n de datos personales.
      */
     private PanelDatosCliente panelDatos;
 
@@ -82,15 +82,15 @@ public class InterfazSimulador extends JFrame
 
     /**
      * Crea una nueva ventana principal del simulador de una cuenta bancaria. <br>
-     * <b>post: </b> Se inicializó la interfaz principal y sus paneles.
+     * <b>post: </b> Se inicializï¿½ la interfaz principal y sus paneles.
      */
     public InterfazSimulador( )
     {
         setTitle( "Simulador bancario" );
-        setSize( 600, 580 );
+        setSize( 600, 700 );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
-        cuenta = new SimuladorBancario( "1.099.735.735", "Nicolás Arrieta" );
+        cuenta = new SimuladorBancario( "1.099.735.735", "NicolÃ¡s Arrieta" );
 
         panelCDT = new PanelCDT( this );
         panelAhorros = new PanelAhorros( this );
@@ -108,7 +108,7 @@ public class InterfazSimulador extends JFrame
         panelCentral.setLayout( new BorderLayout( ) );
         JPanel panelTransacciones = new JPanel( );
         panelTransacciones.setLayout( new GridLayout( 4, 1 ) );
-        panelTransacciones.setBorder( new CompoundBorder( new EmptyBorder( 0, 0, 5, 0 ), new TitledBorder( "Información Bancaria" ) ) );
+        panelTransacciones.setBorder( new CompoundBorder( new EmptyBorder( 0, 0, 5, 0 ), new TitledBorder( "InformaciÃ³n Bancaria" ) ) );
 
         getContentPane( ).add( panelImagen, BorderLayout.NORTH );
         getContentPane( ).add( panelCentral, BorderLayout.CENTER );
@@ -129,12 +129,12 @@ public class InterfazSimulador extends JFrame
     }
 
     // -----------------------------------------------------------------
-    // Métodos
+    // Mï¿½todos
     // -----------------------------------------------------------------
 
     /**
      * Actualiza la interfaz con los datos de la cuenta. <br>
-     * <b>post: </b> Se actualizó los cambios en los paneles correspondientes.
+     * <b>post: </b> Se actualizï¿½ los cambios en los paneles correspondientes.
      */
     public void actualizar( )
     {
@@ -147,54 +147,64 @@ public class InterfazSimulador extends JFrame
 
         panelCorriente.actualizarSaldoCorriente( formatearValor( cuenta.darCuentaCorriente( ).darSaldo( ) ) );
         panelAhorros.actualizarSaldoAhorros( formatearValor( cuenta.darCuentaAhorros( ).darSaldo( ) ) + "   [" + ( cuenta.darCuentaAhorros( ).darInteresMensual( ) * 100 ) + "%]" );
-        panelCDT.actualizarSaldoCDT( formatearValor( cuenta.darCDT( ).calcularValorPresente( cuenta.darMesActual( ) ) ) + "   [" + ( cuenta.darCDT( ).darInteresMensual( ) * 100 ) + "%]" );
+      
+            if (cuenta.darCDT() != null) {
+            double valorPresente = cuenta.darCDT().calcularValorPresente(cuenta.darMesActual());
+            panelCDT.actualizarSaldoCDT(
+                formatearValor(valorPresente),
+                cuenta.darCDT().darInteresMensual()
+            );
+        } else {
+            panelCDT.actualizarSaldoCDT(formatearValor(0), 0);
+        }
+        
+        // Actualizar otros paneles
+        panelCorriente.actualizarSaldoCorriente(formatearValor(cuenta.darCuentaCorriente().darSaldo()));
+        panelAhorros.actualizarSaldoAhorros(formatearValor(cuenta.darCuentaAhorros().darSaldo()) 
+            + "   [" + (cuenta.darCuentaAhorros().darInteresMensual() * 100) + "%]");
+        panelSaldos.actualizarSaldoTotal(formatearValor(cuenta.calcularSaldoTotal()));
 
     }
 
     /**
      * Invierte un monto de dinero en un CDT. <br>
-     * <b>post: </b> Se realizó la inversión en un CDT.
+     * <b>post: </b> Se realizï¿½ la inversiï¿½n en un CDT.
      * @param pMonto Monto de dinero a invertir en el CDT.
      * @param pInteres Valor de los intereses en porcentaje.
      */
     public void invertirCDT( String pMonto, String pInteres )
     {
-        if( pMonto != null )
-        {
-            try
-            {
-                int monto = Integer.parseInt( pMonto );
-                double interes = Double.parseDouble( pInteres );
-                if( monto > 0 && interes > 0 )
-                {
-                    cuenta.invertirCDT( monto, interes / 100 );
-                    actualizar();
+        if (pMonto != null) {
+            try {
+                double monto = Double.parseDouble(pMonto);
+                double interes = Double.parseDouble(pInteres);
+                if (monto > 0 && interes > 0) {
+                    cuenta.invertirCDT(monto, interes / 100);
+                    actualizar(); // Asegurarse de llamar a actualizar
+                } else {
+                    JOptionPane.showMessageDialog(this, "Debe ingresar valores positivos.", 
+                        "Invertir en CDT", JOptionPane.ERROR_MESSAGE);
                 }
-                else
-                {
-                    JOptionPane.showMessageDialog( this, "Debe  ingresar valores positivos.", "Invertir en CDT", JOptionPane.ERROR_MESSAGE );
-                }
-            }
-            catch( Exception e )
-            {
-                JOptionPane.showMessageDialog( this, "Se ingresó un monto de dinero o interés inválido.", "Invertir en CDT", JOptionPane.ERROR_MESSAGE );
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Se ingresÃ³ un monto de dinero o interÃ©s invÃ¡lido.", 
+                    "Invertir en CDT", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     /**
      * Cierra el CDT del cliente. <br>
-     * <b>post: </b> Se cerró el CDT del cliente.
+     * <b>post: </b> Se cerrï¿½ el CDT del cliente.
      */
     public void cerrarCDT( )
     {
         cuenta.cerrarCDT( );
-        actualizar();
+        actualizar(); 
     }
 
     /**
      * Retira un monto de dinero de la cuenta de ahorros del cliente. <br>
-     * <b>post: </b> Se retiró un monto de dinero de la cuenta de ahorros del cliente.
+     * <b>post: </b> Se retirï¿½ un monto de dinero de la cuenta de ahorros del cliente.
      * @param pMonto Monto de dinero a retirar de la cuenta de ahorros del cliente.
      */
     public void retirarAhorros( String pMonto )
@@ -219,14 +229,14 @@ public class InterfazSimulador extends JFrame
         }
         catch( Exception e )
         {
-            JOptionPane.showMessageDialog( this, "Se ingresó un monto de dinero inválido.", "Retirar", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( this, "Se ingresÃ³ un monto de dinero invÃ¡lido.", "Retirar", JOptionPane.ERROR_MESSAGE );
 
         }
     }
 
     /**
      * Consigna un monto de dinero en la cuenta de ahorros del cliente. <br>
-     * <b>post: </b> Se consignó el monto de dinero a la cuenta de ahorros del cliente.
+     * <b>post: </b> Se consignï¿½ el monto de dinero a la cuenta de ahorros del cliente.
      * @param pMonto Monto de dinero a consignar en la cuenta de ahorros del cliente.
      */
     public void consignarAhorros( String pMonto )
@@ -247,14 +257,14 @@ public class InterfazSimulador extends JFrame
         }
         catch( Exception e )
         {
-            JOptionPane.showMessageDialog( this, "Se ingresó un monto de dinero inválido.", "Consignar", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( this, "Se ingresÃ³ un monto de dinero invÃ¡lido.", "Consignar", JOptionPane.ERROR_MESSAGE );
 
         }
     }
 
     /**
      * Retira un monto de dinero de la cuenta corriente. <br>
-     * <b>post: </b> Se retiró de la cuenta corriente del cliente el monto especificado.
+     * <b>post: </b> Se retirï¿½ de la cuenta corriente del cliente el monto especificado.
      * @param pMonto Monto de dinero a retirar de la cuenta corriente.
      */
     public void retirarCorriente( String pMonto )
@@ -279,13 +289,13 @@ public class InterfazSimulador extends JFrame
         }
         catch( Exception e )
         {
-            JOptionPane.showMessageDialog( this, "Se ingresó un monto de dinero inválido.", "Retirar", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( this, "Se ingresÃ³ un monto de dinero invÃ¡lido.", "Retirar", JOptionPane.ERROR_MESSAGE );
         }
     }
 
     /**
      * Consigna un monto de dinero en la cuenta corriente. <br>
-     * <b>post: </b> Se consignó el monto especificado en la cuenta corriente del cliente.
+     * <b>post: </b> Se consignï¿½ el monto especificado en la cuenta corriente del cliente.
      * @param pMonto Monto de dinero a consignar de la cuenta corriente.
      */
     public void consignarCorriente( String pMonto )
@@ -305,14 +315,14 @@ public class InterfazSimulador extends JFrame
         }
         catch( Exception e )
         {
-            JOptionPane.showMessageDialog( this, "Se ingresó un monto de dinero inválido.", "Consignar", JOptionPane.ERROR_MESSAGE );
+            JOptionPane.showMessageDialog( this, "Se ingresï¿½ un monto de dinero invï¿½lido.", "Consignar", JOptionPane.ERROR_MESSAGE );
 
         }
     }
 
     /**
-     * Formatea un valor numérico para presentar en la interfaz.
-     * @param pValor Valor numérico a ser formateado. pValor > 0.
+     * Formatea un valor numï¿½rico para presentar en la interfaz.
+     * @param pValor Valor numï¿½rico a ser formateado. pValor > 0.
      * @return Retorna un string con el valor formateado con puntos y signos.
      */
     private String formatearValor( double pValor )
@@ -324,7 +334,7 @@ public class InterfazSimulador extends JFrame
     }
 
     /**
-     * Avanza un mes en la simulación del banco.
+     * Avanza un mes en la simulaciï¿½n del banco.
      */
     public void avanzarMesSimulacion( )
     {
@@ -334,11 +344,11 @@ public class InterfazSimulador extends JFrame
     }
 
     // -----------------------------------------------------------------
-    // Puntos de Extensión
+    // Puntos de Extensiï¿½n
     // -----------------------------------------------------------------
 
     /**
-     * Método para la extensión 1.
+     * Mï¿½todo para la extensiï¿½n 1.
      */
     public void reqFuncOpcion1( )
     {
@@ -348,7 +358,7 @@ public class InterfazSimulador extends JFrame
     }
 
     /**
-     * Método para la extensión 2.
+     * Mï¿½todo para la extensiï¿½n 2.
      */
     public void reqFuncOpcion2( )
     {
@@ -357,13 +367,30 @@ public class InterfazSimulador extends JFrame
         JOptionPane.showMessageDialog( this, respuesta, "Respuesta.", JOptionPane.INFORMATION_MESSAGE );
     }
 
+    /**
+     * @param mesInicio Mes inicial del perÃ­odo
+     * @param mesFin Mes final del perÃ­odo
+     * @return Saldo promedio del perÃ­odo
+     */
+    public double calcularSaldoPromedio(int mesInicio, int mesFin) {
+        return cuenta.calcularSaldoPromedio(mesInicio, mesFin);
+    }
+
+    /**
+     * Se obtiene el resumen de transacciones del mes actual.
+     * @return Cadena con el resumen de transacciones
+     */
+    public String obtenerResumenTransacciones() {
+        return cuenta.obtenerResumenTransacciones();
+    }
+
     // -----------------------------------------------------------------
     // Main
     // -----------------------------------------------------------------
 
     /**
-     * Ejecuta la aplicación.
-     * @param pArgs Parámetros de la ejecución. No son necesarios.
+     * Ejecuta la aplicacion.
+     * @param pArgs ParÃ¡metros de la ejecuciÃ³n. No son necesarios.
      */
     public static void main( String[] pArgs )
     {

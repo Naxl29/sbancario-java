@@ -1,6 +1,6 @@
 /**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Universidad de los Andes (Bogotá - Colombia)
- * Departamento de Ingeniería de Sistemas y Computación 
+ * Universidad de los Andes (Bogotï¿½ - Colombia)
+ * Departamento de Ingenierï¿½a de Sistemas y Computaciï¿½n 
  * Licenciado bajo el esquema Academic Free License version 2.1 
  *
  * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 /**
- * Panel con las opciones de la aplicación.
+ * Panel con las opciones de la aplicaciï¿½n.
  */
 @SuppressWarnings("serial")
 public class PanelCDT extends JPanel implements ActionListener
@@ -79,24 +79,31 @@ public class PanelCDT extends JPanel implements ActionListener
      */
     private JButton btnCerrarCDT;
 
+    private JLabel etiquetaInteresCdt;
+
+    private JTextField txtInteresCdt;
+
     // -----------------------------------------------------------------
     // Constructores
     // -----------------------------------------------------------------
 
     /**
      * Crea un nuevo panel e inicializa sus elementos. <br>
-     * <b>post: </b> Se inicializó el panel.
-     * @param pPrincipal Ventana principal de la aplicación. pPrincipal != null.
+     * <b>post: </b> Se inicializï¿½ el panel.
+     * @param pPrincipal Ventana principal de la aplicaciï¿½n. pPrincipal != null.
      */
     public PanelCDT( InterfazSimulador pPrincipal )
     {
 
-        // Inicializa los elementos del panel
         principal = pPrincipal;
 
         etiquetaSaldoCdt = new JLabel( "Saldo CDT: " );
         txtSaldoCdt = new JTextField( 14 );
         txtSaldoCdt.setEditable( false );
+
+        etiquetaInteresCdt = new JLabel( "InterÃ©s (%): " );
+        txtInteresCdt = new JTextField( 14 );
+        txtInteresCdt.setEditable( false );
 
         btnAbrirCDT = new JButton( "Abrir" );
         btnAbrirCDT.setActionCommand( ABRIR_CDT );
@@ -109,9 +116,9 @@ public class PanelCDT extends JPanel implements ActionListener
         btnCerrarCDT.setPreferredSize( new Dimension( 100, 0 ) );
 
         JPanel panelInfo = new JPanel( );
-        JPanel panelBotones = new JPanel( );
-        panelInfo.setLayout( new GridLayout( 1, 2 ) );
+        panelInfo.setLayout( new GridLayout( 2, 2, 5, 5 ) );
         panelInfo.setBorder( new EmptyBorder( 0, 0, 5, 0 ) );
+        JPanel panelBotones = new JPanel( );
         panelBotones.setLayout( new BorderLayout( ) );
         panelBotones.setBorder( new EmptyBorder( 0, 5, 5, 5 ) );
         panelBotones.setPreferredSize( new Dimension( 215, 0 ) );
@@ -119,6 +126,8 @@ public class PanelCDT extends JPanel implements ActionListener
         // Ubica los elementos en el panel
         panelInfo.add( etiquetaSaldoCdt );
         panelInfo.add( txtSaldoCdt );
+        panelInfo.add( etiquetaInteresCdt );
+        panelInfo.add( txtInteresCdt );
         panelBotones.add( btnAbrirCDT, BorderLayout.WEST );
         panelBotones.add( new JLabel( " " ), BorderLayout.CENTER );
         panelBotones.add( btnCerrarCDT, BorderLayout.EAST );
@@ -130,32 +139,38 @@ public class PanelCDT extends JPanel implements ActionListener
     }
 
     // -----------------------------------------------------------------
-    // Métodos
+    // Mï¿½todos
     // -----------------------------------------------------------------
 
     /**
      * Actualiza el saldo del CDT del cliente en la interfaz. <br>
-     * <b>post: </b> Se actualizó la información con el saldo en CDT.
+     * <b>post: </b> Se actualizï¿½ la informaciï¿½n con el saldo en CDT.
      * @param pSaldo Saldo en el CDT del cliente. pSaldo != null.
      */
-    public void actualizarSaldoCDT( String pSaldo )
-    {
-        txtSaldoCdt.setText( pSaldo );
+    public void actualizarSaldoCDT(String pSaldo, double pInteres) {
+        // Extraer solo el valor numÃ©rico del saldo (eliminar el texto adicional)
+        String saldoLimpio = pSaldo;
+        if (pSaldo.contains("[")) {
+            saldoLimpio = pSaldo.substring(0, pSaldo.indexOf("[")).trim();
+        }
+        
+        txtSaldoCdt.setText(saldoLimpio);
+        txtInteresCdt.setText(String.format("%.2f", pInteres * 100));
     }
 
     /**
      * Manejo de los eventos de los botones.
-     * @param pEvento Evento de click sobre un botón. pEvento != null.
+     * @param pEvento Evento de click sobre un botï¿½n. pEvento != null.
      */
     public void actionPerformed( ActionEvent pEvento )
     {
         String command = pEvento.getActionCommand( );
         if( command.equals( ABRIR_CDT ) )
         {
-            String strValor = JOptionPane.showInputDialog( principal, "Introduzca el monto de dinero de la inversión", "Abrir CDT", JOptionPane.QUESTION_MESSAGE );
+            String strValor = JOptionPane.showInputDialog( principal, "Introduzca el monto de dinero de la inversiï¿½n", "Abrir CDT", JOptionPane.QUESTION_MESSAGE );
             if( strValor != null )
             {
-                String strInteres = JOptionPane.showInputDialog( principal, "Introduzca el interés mensual en porcentaje", "Abrir CDT", JOptionPane.QUESTION_MESSAGE );
+                String strInteres = JOptionPane.showInputDialog( principal, "Introduzca el interï¿½s mensual en porcentaje", "Abrir CDT", JOptionPane.QUESTION_MESSAGE );
                 if( strInteres != null )
                 {
                     principal.invertirCDT( strValor, strInteres );
